@@ -75,11 +75,10 @@ For Swift developers, the [CreemKit](https://github.com/Lakr233/CreemKit) librar
 import CreemKit
 
 let interface = CreemInterfaceViaProxy(
-        scheme: "https",
-        host: "your.proxy.host", // can be an IP address or domain name
-        port: 8443,
-        certificateFingerprint: "FDFA378E65E06CA4F8CCF397AA1C1148811C3CA3",
-        signingPublicKey: "1/UKeIXpIeE6kbsFeTvtgxOIkkaB7n/2YMpdZx9XNCs=" // base64 encoded
+    host: "your.proxy.host", // can be an IP address or domain name
+    port: 8443,
+    certificateFingerprint: "FDFA378E65E06CA4F8CCF397AA1C1148811C3CA3",
+    signingPublicKey: "1/UKeIXpIeE6kbsFeTvtgxOIkkaB7n/2YMpdZx9XNCs=" // base64 encoded
 )
 ```
 

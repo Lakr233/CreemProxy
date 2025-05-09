@@ -44,7 +44,7 @@ To use Creem Testing Mode, set `CREEM_API_HOST` to `https://test-api.creem.io`.
 
 ## Getting Started - Client Side
 
-After starting the server, check its console output for the following keys before configuring your client:
+After starting the server, check its console output with `docker compose logs` for the following keys before configuring your client:
 
 ```
 ✔ Container creemproxy-app-1

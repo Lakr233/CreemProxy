@@ -1,0 +1,11 @@
+services:
+  app:
+    image: ghcr.io/Lakr233/CreemProxy:latest
+    ports:
+      - "8443:8443"
+    environment:
+      # see README for other environment variables
+      - CREEM_API_KEY=""
+    volumes:
+      - ./data:/app/data
+

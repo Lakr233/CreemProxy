@@ -14,14 +14,20 @@ The simplest way to run the proxy is with Docker. Ensure you have Docker with Do
 
 ```yaml
 services:
-    app:
-        image: ghcr.io/lakr233/creemproxy:main
-        ports:
-            - "8443:8443"
-        environment:
-            - CREEM_API_KEY="" # remember to replace with your API key
-        volumes:
-            - ./data:/app/data
+  app:
+    image: ghcr.io/lakr233/creemproxy:main
+    ports:
+      - "8443:8443"
+    environment:
+      - CREEM_API_KEY="" # remember to replace with your API key
+    volumes:
+      - ./data:/app/data
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "128m"
+        max-file: "5"
 ```
 
 Configure the proxy using the following environment variables. These can be set in your `compose.yml` file or an `.env` file.

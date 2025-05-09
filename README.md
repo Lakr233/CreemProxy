@@ -15,7 +15,7 @@ The simplest way to run the proxy is with Docker. Ensure you have Docker with Do
 ```yaml
 services:
     app:
-        image: ghcr.io/Lakr233/CreemProxy:latest
+        image: ghcr.io/lakr233/creemproxy:main
         ports:
             - "8443:8443"
         environment:

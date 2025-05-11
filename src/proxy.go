@@ -81,6 +81,22 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// later we rely on plain text signing
+	if r.Header.Get("Accept") == "" {
+		r.Header.Set("Accept", "application/json; charset=utf-8")
+	} else {
+		log.Printf("[-] invalid Accept header: %s", r.Header.Get("Accept"))
+		http.Error(w, "Bad Request: Header `Accept` must not be set", http.StatusBadRequest)
+		return
+	}
+	if r.Header.Get("Accept-Encoding") == "" {
+		r.Header.Set("Accept-Encoding", "identity")
+	} else {
+		log.Printf("[-] invalid Accept-Encoding header: %s", r.Header.Get("Accept-Encoding"))
+		http.Error(w, "Bad Request: Header `Accept-Encoding` must not be set", http.StatusBadRequest)
+		return
+	}
+
 	log.Printf("[*] qualified request received: %s %s", r.Method, r.URL.Path)
 
 	proxy := &httputil.ReverseProxy{

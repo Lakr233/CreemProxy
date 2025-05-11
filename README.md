@@ -73,7 +73,7 @@ Pinning the certificate requires updating your client if the server's certificat
 
 **It is strongly recommended to implement at least one of these security measures. If you opt to accept any certificate, ensure you still verify the response data signature.**
 
-### CreemKit - Swift @ iOS/macOS/Linux...
+### CreemKit - Swift
 
 For Swift developers, the [CreemKit](https://github.com/Lakr233/CreemKit) library simplifies integration with the proxy.
 

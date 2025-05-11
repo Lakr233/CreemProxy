@@ -1,6 +1,7 @@
 services:
   app:
     image: ghcr.io/lakr233/creemproxy:main
+    restart: always
     ports:
       - "8443:8443"
     environment:

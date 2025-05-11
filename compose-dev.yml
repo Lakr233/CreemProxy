@@ -1,15 +1,8 @@
 services:
   app:
-    image: ghcr.io/lakr233/creemproxy:main
+    build: .
+    env_file: .env
     ports:
       - "8443:8443"
-    environment:
-      - CREEM_API_KEY="" # remember to replace with your API key
     volumes:
       - ./data:/app/data
-    restart: always
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "128m"
-        max-file: "5"

@@ -78,13 +78,14 @@ Pinning the certificate requires updating your client if the server's certificat
 For Swift developers, the [CreemKit](https://github.com/Lakr233/CreemKit) library simplifies integration with the proxy.
 
 ```swift
-import CreemKit
+import CreemProxyKit
 
-let interface = CreemInterfaceViaProxy(
-    host: "your.proxy.host", // can be an IP address or domain name
-    port: 8443,
-    certificateFingerprint: "FDFA378E65E06CA4F8CCF397AA1C1148811C3CA3",
-    signingPublicKey: "1/UKeIXpIeE6kbsFeTvtgxOIkkaB7n/2YMpdZx9XNCs=" // base64 encoded
+let creemInterface = CreemInterfaceViaProxy(
+    host: try! String(
+        contentsOfFile: "/tmp/creem.api.test.host"
+    ).trimmingCharacters(in: .whitespacesAndNewlines),
+    certificateFingerprint: .matchHash("0EA6CC5707C4485FF5A93F2D452B1903E3E6773B"),
+    signingPublicKey: .verifyWithPublicKey("ObReLUe4wm8rwkBF6L99yxvm8OFrV4LADID61tpMjig=")
 )
 ```
 

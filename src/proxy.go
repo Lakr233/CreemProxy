@@ -8,7 +8,60 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"sync"
+	"time"
 )
+
+type IPRateLimiter struct {
+	mu      sync.Mutex
+	entries map[string]*rateLimitEntry
+}
+
+type rateLimitEntry struct {
+	count     int
+	lastReset time.Time
+}
+
+var rateLimiter = &IPRateLimiter{
+	entries: make(map[string]*rateLimitEntry),
+}
+
+func (rl *IPRateLimiter) CheckRateLimit(ip string) bool {
+	rl.mu.Lock()
+	defer rl.mu.Unlock()
+	now := time.Now()
+
+	entry, exists := rl.entries[ip]
+	if !exists {
+		entry = &rateLimitEntry{
+			count:     1,
+			lastReset: now,
+		}
+		rl.entries[ip] = entry
+		return false
+	}
+
+	if now.Sub(entry.lastReset) > time.Minute {
+		entry.count = 1
+		entry.lastReset = now
+		return false
+	}
+
+	entry.count++
+	return entry.count > 10
+}
+
+func (rl *IPRateLimiter) CleanupExpired() {
+	rl.mu.Lock()
+	defer rl.mu.Unlock()
+
+	now := time.Now()
+	for ip, entry := range rl.entries {
+		if now.Sub(entry.lastReset) > 5*time.Minute {
+			delete(rl.entries, ip)
+		}
+	}
+}
 
 func ProxyDirector(req *http.Request) {
 	targetURL, err := url.Parse(CREEM_API_HOST)
@@ -52,6 +105,17 @@ func AddSignatureToResponse(res *http.Response) error {
 }
 
 func ProxyHandler(w http.ResponseWriter, r *http.Request) {
+	clientIP := r.RemoteAddr
+	if fwdIP := r.Header.Get("X-Forwarded-For"); fwdIP != "" {
+		clientIP = fwdIP
+	}
+
+	if rateLimiter.CheckRateLimit(clientIP) {
+		http.Error(w, "Too Many Requests", http.StatusTooManyRequests)
+		log.Printf("[-] rate limit exceeded for IP: %s", clientIP)
+		return
+	}
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		log.Printf("[-] invalid request method: %s", r.Method)

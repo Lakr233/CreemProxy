@@ -2,6 +2,7 @@ package src
 
 import (
 	"log"
+	"net/http"
 	"os"
 )
 
@@ -25,6 +26,28 @@ var ALLOWED_PATHS = []string{
 	"/v1/licenses/activate",
 	"/v1/licenses/validate",
 	"/v1/licenses/deactivate",
+}
+
+func TestApiKeyWithListProducts() bool {
+	url := CREEM_API_HOST + "/v1/products/search"
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.Printf("[-] error creating request: %s", err)
+		return false
+	}
+	req.Header.Set("x-api-key", CREEM_API_KEY)
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Printf("[-] error sending request: %s", err)
+		return false
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		log.Printf("[-] request failed with status code: %d", resp.StatusCode)
+		return false
+	}
+	return true
 }
 
 func PopulateEnv() {
@@ -55,4 +78,10 @@ func PopulateEnv() {
 	SigningDir = SERVER_DATA_DIR + "signing_keys/"
 	SigningPublicKeyPath = SigningDir + "signing_public.key"
 	SigningPrivateKeyPath = SigningDir + "signing_private.key"
+
+	if TestApiKeyWithListProducts() {
+		log.Print("[+] list product indicates API key is valid")
+	} else {
+		log.Fatal("[-] unable to validate API key")
+	}
 }

@@ -151,6 +151,22 @@ func ProxyHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("[*] qualified request received: %s %s", r.Method, r.URL.Path)
 
+	if r.Header.Get("Content-Type") == "application/json" {
+		bodyBytes, err := io.ReadAll(r.Body)
+		if err != nil {
+			log.Printf("[-] error reading request body: %v", err)
+			http.Error(w, "Error reading request body", http.StatusInternalServerError)
+			return
+		} else {
+			r.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+			if len(bodyBytes) > 0 {
+				log.Printf("[*] request body: %s", string(bodyBytes))
+			} else {
+				log.Printf("[*] request body is empty (Content-Type: application/json)")
+			}
+		}
+	}
+
 	proxy := &httputil.ReverseProxy{
 		Director:       ProxyDirector,
 		ModifyResponse: AddSignatureToResponse,
